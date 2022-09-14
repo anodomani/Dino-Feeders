@@ -6,6 +6,7 @@ public class GameManager : MonoBehaviour
 {
     
     public enum State{ live, dead }
+    public enum ItemType{ wateringCan, seed, bone }
     public static GameManager instance;
     public int mapSizeX, mapSizeY;
     public float tileSize;

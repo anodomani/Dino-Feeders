@@ -11,6 +11,7 @@ public class TileBehaviour : MonoBehaviour
     public GameManager.State currentState;
     public List<Material> dead;
     public List<Material> live;
+    public int fossilSpawnRate;
 
     // Start is called before the first frame update
     void Start()

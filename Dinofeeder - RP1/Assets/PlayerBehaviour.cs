@@ -14,6 +14,7 @@ public class PlayerBehaviour : MonoBehaviour
     public Animator avatarAnimator;
     public LayerMask interactMask;
     public event System.Action interactEvent;
+    public ItemBehaviour contains;
     // Start is called before the first frame update
     void Start()
     {
@@ -52,13 +53,20 @@ public class PlayerBehaviour : MonoBehaviour
             lineRenderer.SetPosition(0, new Vector3(transform.position.x, transform.position.y, transform.position.z+1));
             lineRenderer.SetPosition(1, hit.transform.position);
             lineRenderer.endColor = Color.red;
-            if(hit.transform.GetComponent<TileBehaviour>() != null && Vector3.Distance(transform.position, hit.transform.position) < reach){
+            if(Vector3.Distance(transform.position, hit.transform.position) < reach){
                 lineRenderer.endColor = Color.green;
                 if(Input.GetButtonDown("Interact")){
-                    print("name: " + hit.collider.name + ", distance: " + ", " + transform.position + ", " + hit.transform.position + ", " + Vector3.Distance(transform.position, hit.transform.position) + ", reach: " + reach);
-                    hit.transform.gameObject.GetComponent<TileBehaviour>().currentState = GameManager.State.live;
-                }  
-            }         
+                    if(hit.transform.GetComponent<ItemBehaviour>() != null){
+                        contains = hit.transform.gameObject.GetComponent<ItemBehaviour>();
+                        hit.transform.parent = this.transform;
+                        hit.transform.localPosition = Vector3.zero;
+                    }
+                    else if(hit.transform.GetComponent<TileBehaviour>() != null && contains != null && contains.type == GameManager.ItemType.wateringCan){    
+                        print("name: " + hit.collider.name + ", distance: " + ", " + transform.position + ", " + hit.transform.position + ", " + Vector3.Distance(transform.position, hit.transform.position) + ", reach: " + reach);
+                        hit.transform.gameObject.GetComponent<TileBehaviour>().currentState = GameManager.State.live;
+                    }
+                } 
+            }    
         }
     }
 
