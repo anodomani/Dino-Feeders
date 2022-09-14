@@ -6,18 +6,20 @@ public class PlayerBehaviour : MonoBehaviour
 {
     Vector3 mousePos;
     GameManager gM;
+    LineRenderer lineRenderer;
+    Rigidbody2D rb;
     public float moveSpeed;
     public float reach;
     public SpriteRenderer avatarSR;
     public Animator avatarAnimator;
     public LayerMask interactMask;
-    Rigidbody2D rb;
     public event System.Action interactEvent;
     // Start is called before the first frame update
     void Start()
     {
         gM = GameManager.instance;
         rb = GetComponent<Rigidbody2D>();
+        lineRenderer = GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
@@ -44,30 +46,19 @@ public class PlayerBehaviour : MonoBehaviour
     }
 
     void Interact(){
-        if(Input.GetButtonDown("Interact")){
-            {
-                RaycastHit hit;
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                if(Physics.Raycast(ray, out hit, 200, interactMask)){
+        RaycastHit hit;
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if(Physics.Raycast(ray, out hit, 200, interactMask)){
+            lineRenderer.SetPosition(0, new Vector3(transform.position.x, transform.position.y, transform.position.z+1));
+            lineRenderer.SetPosition(1, hit.transform.position);
+            lineRenderer.endColor = Color.red;
+            if(hit.transform.GetComponent<TileBehaviour>() != null && Vector3.Distance(transform.position, hit.transform.position) < reach){
+                lineRenderer.endColor = Color.green;
+                if(Input.GetButtonDown("Interact")){
                     print("name: " + hit.collider.name + ", distance: " + ", " + transform.position + ", " + hit.transform.position + ", " + Vector3.Distance(transform.position, hit.transform.position) + ", reach: " + reach);
-                    if(hit.transform.GetComponent<TileBehaviour>() != null && Vector3.Distance(transform.position, hit.transform.position) < reach){
-                        hit.transform.gameObject.GetComponent<TileBehaviour>().currentState = GameManager.State.live;
-                    }
-                }
-            }
-            /*
-            RaycastHit hit;
-            Ray mousePos = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if(Physics.Raycast(mousePos, out hit, 100)){
-                print("interacting " + Vector3.Distance(transform.position, Input.mousePosition) + ", " + mousePos + ", " + hit.transform.gameObject.name);
-                if(Vector3.Distance(transform.position, Input.mousePosition) < reach){
-                    if(hit.transform != null){
-                        print("grass here!");
-                        hit.transform.gameObject.GetComponent<TileBehaviour>().currentState = GameManager.State.live;
-                    }
-                }   
-            }
-            */
+                    hit.transform.gameObject.GetComponent<TileBehaviour>().currentState = GameManager.State.live;
+                }  
+            }         
         }
     }
 
